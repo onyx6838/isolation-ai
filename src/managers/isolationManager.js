@@ -62,6 +62,7 @@ const IsolationManager = {
         let posy = activePlayer.y + 1;
         for (let posx = activePlayer.x + 1; posx < x; posx++) {
           if (values[posy][posx]) {
+            
             isBlocked = true;
             break;
           }
@@ -118,7 +119,7 @@ const IsolationManager = {
     if (activePlayer.x !== -1) {
       let x, y;
 
-      // Up.
+      // Up
       for (y = activePlayer.y - 1; y >= 0; y--) {
         if (IsolationManager.isValidMove(activePlayer.x, y, playerIndex, players, values, width, height)) {
           moves.push({ x: activePlayer.x, y });
@@ -129,7 +130,7 @@ const IsolationManager = {
         }
       }
 
-      // Down.
+      // Down
       for (y = activePlayer.y + 1; y < height; y++) {
         if (IsolationManager.isValidMove(activePlayer.x, y, playerIndex, players, values, width, height)) {
           moves.push({ x: activePlayer.x, y });
