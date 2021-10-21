@@ -15,7 +15,7 @@ class IsolationContainer extends React.Component {
   }
   onStrategy(e) {
     this.setState({ strategy: StrategyManager[e.currentTarget.value] });
-    console.log(`Strategy set to ${e.currentTarget.value}.`);
+    //console.log(`Strategy set to ${e.currentTarget.value}.`);
   }
   render() {
     return (

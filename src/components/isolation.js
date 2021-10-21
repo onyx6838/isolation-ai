@@ -24,28 +24,26 @@ class Isolation extends React.Component {
     this.onGrid = this.onGrid.bind(this);
   }
 
- 
-
   onGrid(x, y, values) {
     const playerIndex = this.state.playerIndex;
     const players = this.state.players;
 
     if (IsolationManager.isValidMove(x, y, playerIndex, players, values, this.grid.current.props.width, this.grid.current.props.height)) {
-      // Update player position.
+      //
       players[playerIndex].x = x;
       players[playerIndex].y = y;
 
-      // Update the grid local variable with the player move (so available moves will be accurate).
+      //
       values[y][x] = playerIndex + 1;
 
-      // Update available moves for all players.
+      //
       players[0].moves = IsolationManager.availableMoves(0, players, values, this.grid.current.props.width, this.grid.current.props.height);
       players[1].moves = IsolationManager.availableMoves(1, players, values, this.grid.current.props.width, this.grid.current.props.height);
 
-      // Update cell value in the grid.
-      this.grid.current.setValue(x, y, !playerIndex ? 'gray' : 'silver');
+      //
+      this.grid.current.setValue(x, y, !playerIndex ? 'lightpink' : 'lightblue');
 
-      // Update state and play opponent's turn.
+      //
       this.setState({ round: this.state.round + 1, playerIndex: !playerIndex ? 1 : 0, players});
 
       return true;
@@ -59,8 +57,8 @@ class Isolation extends React.Component {
     return (
       <div id='app' ref={this.container}>
         <Grid width={this.state.width} height={this.state.height} grid={this.props.grid} cellStyle={this.props.cellStyle} players={this.state.players} onClick={this.onGrid} ref={this.grid}>
-          <Player width="55" height="55" x={this.state.players[0].x} y={this.state.players[0].y} cellStyle={this.props.cellStyle} color="yellow"></Player>
-          <Player width="55" height="55" x={this.state.players[1].x} y={this.state.players[1].y} cellStyle={this.props.cellStyle} color="blue"></Player>
+          <Player width="100" height="100" x={this.state.players[0].x} y={this.state.players[0].y} cellStyle={this.props.cellStyle} color="#C71585"></Player>
+          <Player width="100" height="100" x={this.state.players[1].x} y={this.state.players[1].y} cellStyle={this.props.cellStyle} color="#00BFFF"></Player>
         </Grid>
         <div className='row'>
           <div className='col col-auto'>

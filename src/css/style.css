@@ -1,3 +1,13 @@
+.container {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  width: 30em;
+  height: 18em;
+  margin-top: -8em;
+  margin-left: -15em;
+}
+
 .cell {
   width: 100px;
   height: 100px;
@@ -13,7 +23,7 @@
 }
 
 .player {
-  margin: 3px 0 0 12px;
+  margin: 25px 0 0 40px;
   font-size: 40px;
   transition: all 0.25s;
 }
