@@ -1,8 +1,8 @@
 import React from 'react';
 import IsolationManager from '../managers/isolationManager';
 import StrategyManager from '../managers/strategyManager';
-import Grid from './Grid';
-import Player from './Player';
+import Grid from './grid';
+import Player from './player';
 
 class Isolation extends React.Component {
   constructor(props) {
@@ -35,8 +35,35 @@ class Isolation extends React.Component {
     this.state.players[1].moves = IsolationManager.allMoves(1, this.state.players, props.width, props.height);
 
     this.grid = React.createRef();
+    this.onGrid = this.onGrid.bind(this);
   }
+  componentDidUpdate(nextProps) {
+    const { strategy, heuristic, width, height, treeDepth, miniMaxDepth } = this.props;
 
+    if (strategy && nextProps.strategy !== strategy) {
+      this.setState({ strategy });
+    }
+
+    if (heuristic && nextProps.heuristic !== heuristic) {
+      this.setState({ heuristic });
+    }
+
+    if (width && nextProps.width !== width) {
+      this.setState({ width });
+    }
+
+    if (height && nextProps.height !== height) {
+      this.setState({ height });
+    }
+
+    if (treeDepth && nextProps.treeDepth !== treeDepth) {
+      this.setState({ treeDepth });
+    }
+
+    if (miniMaxDepth && nextProps.miniMaxDepth !== miniMaxDepth) {
+      this.setState({ miniMaxDepth });
+    }
+  }
   onGrid = (x, y, values) => {
     const playerIndex = this.state.playerIndex;
     const players = this.state.players;
@@ -56,25 +83,13 @@ class Isolation extends React.Component {
       // Update cell value in the grid.
       this.grid.current.setValue(x, y, !playerIndex ? 'lightpink' : 'lightblue');
 
-      
-      
       this.setState({ round: this.state.round + 1, playerIndex: !playerIndex ? 1 : 0, players}, () => {
         if (this.state.playerIndex && this.state.players[this.state.playerIndex].moves.length > 0) {
-          
-          if(this.state.strategy && this.state.strategy === StrategyManager.random) {
-            setTimeout(() => {
-            ({ x, y } = this.props.strategy(this.state.playerIndex, this.state.players, values, this.grid.current.props.width, this.grid.current.props.height));
-            console.log(`AI is moving to ${x},${y}.`)
-            this.onGrid(x, y, values);
-          }, 1000);
-          }
-          else if (this.state.strategy && this.state.strategy === StrategyManager.minimax) {
+        if (this.state.strategy && this.state.strategy !== StrategyManager.none) {
+          console.log(1);
             if(Math.round(this.state.round / 2) === 1) {
-                const tree = '';
                 setTimeout(() => {
-                  // tree = StrategyManager.tree(playerIndex, JSON.parse(JSON.stringify(players)), values, this.grid.current.props.width, this.grid.current.props.height, this.state.round, this.state.heuristic, this.state.miniMaxDepth);
-                // StrategyManager.renderTree(tree, this.state.treeDepth);
-  
+                  const tree = 1;
                 // Get the AI's move.
                 ({ x, y } = this.props.strategy(tree,this.state.playerIndex, this.state.players, values, this.grid.current.props.width, this.grid.current.props.height));
                 console.log(`AI is moving to ${x},${y}.`)

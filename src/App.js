@@ -1,6 +1,6 @@
 import React from 'react'
-import IsolationContainer from './components/IsolationContainer';
-import './app.css'
+import IsolationContainer from './components/isolationContainer';
+import './App.css'
 
 export default function App() {
   return (

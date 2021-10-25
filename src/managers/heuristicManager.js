@@ -36,9 +36,10 @@ const HeuristicManager = {
   //   return (weight * mov) - opponentMoves;
   // }
   // walls: function (playerMoves, opponentMoves, currentMove, width, height) {
-  //   const dis = this.distance(this.state);
+  //   // eslint-disable-next-line no-restricted-globals
+  //   const dis = playerMoves;
   //   if (dis >= 2)
-  //     return this.defensive(this.state);
+  //     return this.defensive(playerMoves, opponentMoves);
   //   else {
   //     return playerMoves - opponentMoves;
   //   }

@@ -35,7 +35,7 @@ const StrategyManager = {
   },
 
   minimax: (tree, playerIndex, players, values, width, height) => {
-    if (tree === '') {
+    if (tree === 1) {
       return StrategyManager.random(playerIndex, players, values, width, height);
     } else {
 
@@ -153,6 +153,7 @@ const StrategyManager = {
         const newPlayerIndex = node.depth % 2 === 0 ? referencePlayerIndex : playerIndex; //0 : 1;
 
         // Evaluate all possible moves from the current state.
+        // eslint-disable-next-line no-loop-func
         node.moves.forEach(move => {
           // Make a copy of the players.
           let newPlayers = JSON.parse(JSON.stringify(node.players));

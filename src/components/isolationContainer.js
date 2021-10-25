@@ -1,7 +1,7 @@
 import React from 'react';
 import StrategyManager from '../managers/strategyManager';
 import HeuristicManager from '../managers/heuristicManager'
-import Isolation from './Isolation';
+import Isolation from './isolation';
 import '../css/style.css';
 
 class IsolationContainer extends React.Component {
@@ -10,7 +10,7 @@ class IsolationContainer extends React.Component {
 
         this.state = {
             strategy: props.strategy || StrategyManager.minimax,
-            heuristic: props.heuristic || HeuristicManager.defensive,
+            heuristic: props.heuristic || HeuristicManager.simple,
             width: props.width || 4,
             height: props.height || 4,
             treeDepth: props.treeDepth || 30,
