@@ -1,16 +1,12 @@
-import IsolationContainer from './components/isolationContainer';
-import './css/style.css';
+import React from 'react'
+import IsolationContainer from './components/IsolationContainer';
+import './app.css'
 
-function App() {
+export default function App() {
   return (
-    <div className="container">
-      <h1>Isolation Game</h1>
-      <IsolationContainer width="4" height="4"></IsolationContainer>
-      <div id="graph">
-
-      </div>
+    <div className='container'>
+      <IsolationContainer width="4" height="4" />
+      <div id="graph"></div>
     </div>
-  );
+  )
 }
-
-export default App;
