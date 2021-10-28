@@ -9,7 +9,7 @@ class IsolationContainer extends React.Component {
         super(props);
 
         this.state = {
-            strategy: props.strategy || StrategyManager.minimax,
+            strategy: props.strategy || StrategyManager.none,
             heuristic: props.heuristic || HeuristicManager.simple,
             width: props.width || 4,
             height: props.height || 4,

@@ -1,9 +1,13 @@
-import React from 'react';
+import React from "react";
 import IsolationManager from '../managers/isolationManager';
 import StrategyManager from '../managers/strategyManager';
 import Grid from './grid';
 import Player from './player';
-
+import io from "socket.io-client";
+//const host = "http://localhost:3000"
+// const socket = io();
+// socket.current = io.connect(host)
+const socket = io('localhost:3000');
 class Isolation extends React.Component {
   constructor(props) {
     super(props);
@@ -34,8 +38,9 @@ class Isolation extends React.Component {
     this.state.players[0].moves = IsolationManager.allMoves(0, this.state.players, props.width, props.height);
     this.state.players[1].moves = IsolationManager.allMoves(1, this.state.players, props.width, props.height);
 
-    this.grid = React.createRef();
-    this.onGrid = this.onGrid.bind(this);
+     this.grid = React.createRef();
+     this.onGrid = this.onGrid.bind(this);
+     
   }
   componentDidUpdate(nextProps) {
     const { strategy, heuristic, width, height, treeDepth, miniMaxDepth } = this.props;
@@ -64,29 +69,34 @@ class Isolation extends React.Component {
       this.setState({ miniMaxDepth });
     }
   }
+  handleSocket(){
+    socket.on('hello',()=>{
+      console.log('Hello client');
+    })
+  }
+  componentDidMount(){
+    socket.on('sendDataClient', data2 => {
+    this.grid.current.setValue(data2.x,data2.y, !data2.playerIndex ? 'lightpink' : 'lightblue');
+    this.setState({x: data2.x, y: data2.y, playerIndex: !data2.playerIndex ? 1 : 0, players: data2.players, values:data2.values, round: this.state.round+1});
+    });
+  }
   onGrid = (x, y, values) => {
     const playerIndex = this.state.playerIndex;
     const players = this.state.players;
-
     if (IsolationManager.isValidMove(x, y, playerIndex, players, values, this.grid.current.props.width, this.grid.current.props.height)) {
-      // Update player position.
       players[playerIndex].x = x;
       players[playerIndex].y = y;
-
-      // Update the grid local variable with the player move (so available moves will be accurate).
+       // Update the grid local variable with the player move (so available moves will be accurate).
       values[y][x] = playerIndex + 1;
 
-      // Update available moves for all players.
-      players[0].moves = IsolationManager.availableMoves(0, players, values, this.grid.current.props.width, this.grid.current.props.height);
-      players[1].moves = IsolationManager.availableMoves(1, players, values, this.grid.current.props.width, this.grid.current.props.height);
+       // Update available moves for all players.
+       players[0].moves = IsolationManager.availableMoves(0, players, values, this.grid.current.props.width, this.grid.current.props.height);
+       players[1].moves = IsolationManager.availableMoves(1, players, values, this.grid.current.props.width, this.grid.current.props.height);
+       socket.emit('sendDataServer', {x:x,y:y,values:values, playerIndex:playerIndex, players:players})
 
-      // Update cell value in the grid.
-      this.grid.current.setValue(x, y, !playerIndex ? 'lightpink' : 'lightblue');
-
-      this.setState({ round: this.state.round + 1, playerIndex: !playerIndex ? 1 : 0, players}, () => {
+      this.setState({ round: this.state.round + 1, playerIndex: !playerIndex ? 1 : 0,values: values,players: players},()=> {
         if (this.state.playerIndex && this.state.players[this.state.playerIndex].moves.length > 0) {
         if (this.state.strategy && this.state.strategy !== StrategyManager.none) {
-          console.log(1);
             if(Math.round(this.state.round / 2) === 1) {
                 setTimeout(() => {
                   const tree = 1;
@@ -113,12 +123,12 @@ class Isolation extends React.Component {
             }
             }
            
-        }
+          }
       });
-      
       return true;
-    }
-  }
+     }
+}
+
 
   render() {
     const moves = this.props.moves !== undefined ? this.props.moves : this.state.players[this.state.playerIndex].moves.length;

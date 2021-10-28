@@ -1,5 +1,8 @@
 import React from 'react';
-import Cell from './cell'
+import Cell from './cell';
+// import io from "socket.io-client";
+// const host = "http://localhost:3000"
+
 
 class Grid extends React.Component {
   constructor(props) {
@@ -49,9 +52,13 @@ class Grid extends React.Component {
 
   onClick(cell, x, y) {
     console.log(`${x},${y}`);
+    this.props.onClick(x, y, this.state.values, cell);
 
     // Callback handler for cell click event.
-    this.props.onClick(x, y, this.state.values, cell);
+    // const socket = io();
+    // socket.current = io.connect(host)
+  //  socket.current.emit('sendDataServer', {x:x,y:y,values:this.state.values})
+
   }
 
   setValue(x, y, value) {

@@ -9,6 +9,7 @@ class Cell extends React.Component {
 
   onClick(e) {
     // Callback handler for cell click event.
+    console.log('a');
     this.props.onClick(this, this.props.x, this.props.y);
   }
 
