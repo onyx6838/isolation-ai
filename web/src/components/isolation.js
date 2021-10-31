@@ -4,7 +4,7 @@ import StrategyManager from '../managers/strategyManager';
 import Grid from './grid';
 import Player from './player';
 import io from "socket.io-client";
-//const host = "http://localhost:3000"
+// const host = "http://localhost:3000"
 // const socket = io();
 // socket.current = io.connect(host)
 const socket = io('localhost:3000');
@@ -13,6 +13,8 @@ class Isolation extends React.Component {
     super(props);
 
     this.state = {
+      roomCode: this.props.roomCode||0,
+      userName: props.userName||'',
       round: 1,
       playerIndex: props.playerIndex || 0,
       players: [
@@ -37,9 +39,8 @@ class Isolation extends React.Component {
 
     this.state.players[0].moves = IsolationManager.allMoves(0, this.state.players, props.width, props.height);
     this.state.players[1].moves = IsolationManager.allMoves(1, this.state.players, props.width, props.height);
-
-     this.grid = React.createRef();
-     this.onGrid = this.onGrid.bind(this);
+    this.grid = React.createRef();
+    this.onGrid = this.onGrid.bind(this);
      
   }
   componentDidUpdate(nextProps) {
@@ -69,16 +70,22 @@ class Isolation extends React.Component {
       this.setState({ miniMaxDepth });
     }
   }
-  handleSocket(){
-    socket.on('hello',()=>{
-      console.log('Hello client');
-    })
-  }
+
   componentDidMount(){
-    socket.on('sendDataClient', data2 => {
-    this.grid.current.setValue(data2.x,data2.y, !data2.playerIndex ? 'lightpink' : 'lightblue');
-    this.setState({x: data2.x, y: data2.y, playerIndex: !data2.playerIndex ? 1 : 0, players: data2.players, values:data2.values, round: this.state.round+1});
-    });
+    // có gửi lên đây nhưng nó k nhận á hả
+    //uk, cái này là check gì
+    // if(StrategyManager.none === this.state.strategy) {
+    //   socket.on('sendDataClient', data => {
+    //     this.grid.current.setValue(data.x,data.y, !data.playerIndex ? 'lightpink' : 'lightblue');
+    //     this.setState({x: data.x, y: data.y, playerIndex: !data.playerIndex ? 1 : 0, players: data.players, values:data.values, round: this.state.round+1, userName: data.userName});
+    //     });
+    // }
+    console.log("111");
+    socket.on('sendDataClient', data => {
+      console.log('send');
+      this.grid.current.setValue(data.x,data.y, !data.playerIndex ? 'lightpink' : 'lightblue');
+      this.setState({x: data.x, y: data.y, playerIndex: !data.playerIndex ? 1 : 0, players: data.players, values:data.values, round: this.state.round+1, userName: data.userName});
+      });
   }
   onGrid = (x, y, values) => {
     const playerIndex = this.state.playerIndex;
@@ -92,14 +99,28 @@ class Isolation extends React.Component {
        // Update available moves for all players.
        players[0].moves = IsolationManager.availableMoves(0, players, values, this.grid.current.props.width, this.grid.current.props.height);
        players[1].moves = IsolationManager.availableMoves(1, players, values, this.grid.current.props.width, this.grid.current.props.height);
-       socket.emit('sendDataServer', {x:x,y:y,values:values, playerIndex:playerIndex, players:players})
-
-      this.setState({ round: this.state.round + 1, playerIndex: !playerIndex ? 1 : 0,values: values,players: players},()=> {
-        if (this.state.playerIndex && this.state.players[this.state.playerIndex].moves.length > 0) {
-        if (this.state.strategy && this.state.strategy !== StrategyManager.none) {
-            if(Math.round(this.state.round / 2) === 1) {
+      if(StrategyManager.none === this.state.strategy) socket.emit('sendDataServer', {x:x,y:y,values:values, playerIndex:playerIndex, players:players, roomCode: this.state.roomCode, userName: this.state.userName});
+      else {
+        this.grid.current.setValue(x,y, !playerIndex ? 'lightpink' : 'lightblue');
+        this.setState({ round: this.state.round + 1, playerIndex: !playerIndex ? 1 : 0,values: values,players: players},()=> {
+          if (this.state.playerIndex && this.state.players[this.state.playerIndex].moves.length > 0) {
+          if (this.state.strategy && this.state.strategy !== StrategyManager.none) {
+              if(Math.round(this.state.round / 2) === 1) {
+                  setTimeout(() => {
+                    const tree = 1;
+                  // Get the AI's move.
+                  ({ x, y } = this.props.strategy(tree,this.state.playerIndex, this.state.players, values, this.grid.current.props.width, this.grid.current.props.height));
+                  console.log(`AI is moving to ${x},${y}.`)
+    
+                  // Move the AI player.
+                  this.onGrid(x, y, values);
+                }, 1000);
+              }else {
+                // AI turn.
                 setTimeout(() => {
-                  const tree = 1;
+                  const tree = StrategyManager.tree(playerIndex, JSON.parse(JSON.stringify(players)), values, this.grid.current.props.width, this.grid.current.props.height, this.state.round, this.state.heuristic, this.state.miniMaxDepth);
+                // StrategyManager.renderTree(tree, this.state.treeDepth);
+  
                 // Get the AI's move.
                 ({ x, y } = this.props.strategy(tree,this.state.playerIndex, this.state.players, values, this.grid.current.props.width, this.grid.current.props.height));
                 console.log(`AI is moving to ${x},${y}.`)
@@ -107,24 +128,13 @@ class Isolation extends React.Component {
                 // Move the AI player.
                 this.onGrid(x, y, values);
               }, 1000);
-            }else {
-              // AI turn.
-              setTimeout(() => {
-                const tree = StrategyManager.tree(playerIndex, JSON.parse(JSON.stringify(players)), values, this.grid.current.props.width, this.grid.current.props.height, this.state.round, this.state.heuristic, this.state.miniMaxDepth);
-              // StrategyManager.renderTree(tree, this.state.treeDepth);
-
-              // Get the AI's move.
-              ({ x, y } = this.props.strategy(tree,this.state.playerIndex, this.state.players, values, this.grid.current.props.width, this.grid.current.props.height));
-              console.log(`AI is moving to ${x},${y}.`)
-
-              // Move the AI player.
-              this.onGrid(x, y, values);
-            }, 1000);
+              }
+              }
+             
             }
-            }
-           
-          }
-      });
+        });
+       }
+     
       return true;
      }
 }
