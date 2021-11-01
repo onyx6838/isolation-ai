@@ -3,8 +3,8 @@ import StrategyManager from '../managers/strategyManager';
 import HeuristicManager from '../managers/heuristicManager'
 import Isolation from './isolation';
 import '../css/style.css';
-import io from "socket.io-client";
-const socket = io('localhost:3000');
+// import store from './store.js';
+// const socket = store.getState().socket;
 class IsolationContainer extends React.Component {
     constructor(props) {
         super(props);
@@ -19,7 +19,7 @@ class IsolationContainer extends React.Component {
             treeDepth: props.treeDepth || 30,
             miniMaxDepth: props.miniMaxDepth || 7
         };
-        console.log(this.state.roomCode);
+        console.log(this.state.userName);
     }
   
     // onStrategy = (e) => {

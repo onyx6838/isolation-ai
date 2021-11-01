@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
-import { Link, Route, Switch } from 'react-router-dom'
+import { Link, Route, Switch , Redirect} from 'react-router-dom'
 import IsolationContainer from './isolationContainer'
 import StrategyManager from '../managers/strategyManager';
 import '../css/style.css';
-import io from "socket.io-client";
-const socket = io('localhost:3000');
+import store from './store.js';
+const socket = store.getState().socket;
 global.jQuery = require('jquery');
 require('bootstrap');
+
 
 class Home extends Component {
     constructor(props) {
@@ -41,26 +42,30 @@ class Home extends Component {
             alert("Bạn phải nhập mã phòng")
         }else {
             socket.emit('createRoom',{roomCode:code, userName:userName});
-            socket.on('successCreated',(userName) =>{
-                console.log(userName);
-                alert("Hi " + userName+" Bạn đã tạo phòng thành công. Hãy gửi mã phòng cho một người bạn bạn muốn chơi cùng!")
-                this.setState({showLink:false});
+            socket.on('Created',(id) =>{
+                if(id==='')alert("Phòng đã tồn tại");
+                else{
+                    alert("Hi " + userName+" Bạn đã tạo phòng thành công. Hãy gửi mã phòng cho một người bạn bạn muốn chơi cùng!")
+                    this.setState({showLink:false});
+                }
             })
         }
     }
     joinRoom = (e) => {
         if(this.state.strategy === StrategyManager.minimax) {
-            this.setState({showLink:false});
+            this.setState({showHome:false});
         }
         else{
             const code = document.querySelector('input[name = "roomCode"]').value;
             const userName = document.querySelector('input[name = "userName"]').value;
             socket.emit('joinRoom',{roomCode:code, userName:userName});
-            socket.on('connectToRoom',(id,userName) => {
-                console.log(id+"/" + userName);
+            socket.on('roomIsFull',(id,userName) => {
+                if(id==='false') {alert("Phòng đã đủ người"); <Redirect to = ""/>}
+                else {
+                    this.setState({showHome:false});
+                }
+                
             })
-        
-            this.setState({showHome:false});
         }
        
         
@@ -68,7 +73,7 @@ class Home extends Component {
     componentDidUpdate  () {
         socket.on('initGame',(name)=>{
             this.setState({showLink:true});
-            //console.log("codeRoom: "+ this.state.roomCode);
+            console.log("codeRoom: "+ this.state.roomCode);
         })
     }
     render() {
