@@ -10,9 +10,9 @@ class Isolation extends React.Component {
     super(props);
 
     this.state = {
-      roomCode: this.props.roomCode||0,
-      userName: props.userName||'',
-      userNamePlaying: props.userName ||'',
+      roomCode: this.props.roomCode || 0,
+      userName: props.userName || '',
+      userNamePlaying: props.userName || '',
       round: 1,
       playerIndex: props.playerIndex || 0,
       players: [
@@ -68,14 +68,14 @@ class Isolation extends React.Component {
     }
   }
 
-  componentDidMount(){
-    if(StrategyManager.none === this.state.strategy) {
+  componentDidMount() {
+    if (StrategyManager.none === this.state.strategy) {
       socket.on('sendDataClient', data => {
-        this.grid.current.setValue(data.x,data.y, !data.playerIndex ? 'lightpink' : 'lightblue');
-        this.setState({x: data.x, y: data.y, playerIndex: !data.playerIndex ? 1 : 0, players: data.players, values:data.values, round: this.state.round+1, userNamePlaying: data.userNamePlaying});
-        });
+        this.grid.current.setValue(data.x, data.y, !data.playerIndex ? 'lightpink' : 'lightblue');
+        this.setState({ x: data.x, y: data.y, playerIndex: !data.playerIndex ? 1 : 0, players: data.players, values: data.values, round: this.state.round + 1, userNamePlaying: data.userNamePlaying });
+      });
     }
-    
+
   }
   onGrid = (x, y, values) => {
     const playerIndex = this.state.playerIndex;
@@ -83,51 +83,51 @@ class Isolation extends React.Component {
     if (IsolationManager.isValidMove(x, y, playerIndex, players, values, this.grid.current.props.width, this.grid.current.props.height)) {
       players[playerIndex].x = x;
       players[playerIndex].y = y;
-       // Update the grid local variable with the player move (so available moves will be accurate).
+      // Update the grid local variable with the player move (so available moves will be accurate).
       values[y][x] = playerIndex + 1;
 
-       // Update available moves for all players.
-       players[0].moves = IsolationManager.availableMoves(0, players, values, this.grid.current.props.width, this.grid.current.props.height);
-       players[1].moves = IsolationManager.availableMoves(1, players, values, this.grid.current.props.width, this.grid.current.props.height);
-      if(StrategyManager.none === this.state.strategy) socket.emit('sendDataServer', {x:x,y:y,values:values, playerIndex:playerIndex, players:players, roomCode: this.state.roomCode, userNamePlaying: this.state.userName});
+      // Update available moves for all players.
+      players[0].moves = IsolationManager.availableMoves(0, players, values, this.grid.current.props.width, this.grid.current.props.height);
+      players[1].moves = IsolationManager.availableMoves(1, players, values, this.grid.current.props.width, this.grid.current.props.height);
+      if (StrategyManager.none === this.state.strategy) socket.emit('sendDataServer', { x: x, y: y, values: values, playerIndex: playerIndex, players: players, roomCode: this.state.roomCode, userNamePlaying: this.state.userName });
       else {
-        this.grid.current.setValue(x,y, !playerIndex ? 'lightpink' : 'lightblue');
-        this.setState({ round: this.state.round + 1, playerIndex: !playerIndex ? 1 : 0,values: values,players: players},()=> {
+        this.grid.current.setValue(x, y, !playerIndex ? 'lightpink' : 'lightblue');
+        this.setState({ round: this.state.round + 1, playerIndex: !playerIndex ? 1 : 0, values: values, players: players }, () => {
           if (this.state.playerIndex && this.state.players[this.state.playerIndex].moves.length > 0) {
-          if (this.state.strategy && this.state.strategy !== StrategyManager.none) {
-              if(Math.round(this.state.round / 2) === 1) {
-                  setTimeout(() => {
-                    const tree = 1;
+            if (this.state.strategy && this.state.strategy !== StrategyManager.none) {
+              if (Math.round(this.state.round / 2) <= 2) {
+                setTimeout(() => {
+                  const tree = 1;
                   // Get the AI's move.
-                  ({ x, y } = this.props.strategy(tree,this.state.playerIndex, this.state.players, values, this.grid.current.props.width, this.grid.current.props.height));
+                  ({ x, y } = this.props.strategy(tree, this.state.playerIndex, this.state.players, values, this.grid.current.props.width, this.grid.current.props.height));
                   console.log(`AI is moving to ${x},${y}.`)
-    
+
                   // Move the AI player.
                   this.onGrid(x, y, values);
                 }, 1000);
-              }else {
+              } else {
                 // AI turn.
                 setTimeout(() => {
                   const tree = StrategyManager.tree(playerIndex, JSON.parse(JSON.stringify(players)), values, this.grid.current.props.width, this.grid.current.props.height, this.state.round, this.state.heuristic, this.state.miniMaxDepth);
-                // StrategyManager.renderTree(tree, this.state.treeDepth);
-  
-                // Get the AI's move.
-                ({ x, y } = this.props.strategy(tree,this.state.playerIndex, this.state.players, values, this.grid.current.props.width, this.grid.current.props.height));
-                console.log(`AI is moving to ${x},${y}.`)
-  
-                // Move the AI player.
-                this.onGrid(x, y, values);
-              }, 1000);
+                  // StrategyManager.renderTree(tree, this.state.treeDepth);
+
+                  // Get the AI's move.
+                  ({ x, y } = this.props.strategy(tree, this.state.playerIndex, this.state.players, values, this.grid.current.props.width, this.grid.current.props.height));
+                  console.log(`AI is moving to ${x},${y}.`)
+
+                  // Move the AI player.
+                  this.onGrid(x, y, values);
+                }, 1000);
               }
-              }
-             
             }
+
+          }
         });
-       }
-     
+      }
+
       return true;
-     }
-}
+    }
+  }
 
 
   render() {
@@ -143,13 +143,13 @@ class Isolation extends React.Component {
         </Grid>
         <div className='row'>
           <div className='col col-auto'>
-            <div className={`badge ${!this.state.playerIndex ? 'badge-danger' : 'badge-primary'}`}>Player {this.state.userNamePlaying}'s Turn</div>
+            <div className={`badge ${!this.state.playerIndex ? 'badge-danger' : 'badge-primary'}`}>Player {this.state.userNamePlaying ? this.state.userNamePlaying : this.state.playerIndex + 1}'s Turn</div>
           </div>
           <div className='col col-auto'>
             <div className='badge badge-success'>{moves} Moves Available</div>
           </div>
           <div className='col col-auto'>
-            <div className={`badge badge-success ${!moves ? '' : 'd-none'}`}>Player {this.state.userNamePlaying} wins!</div>
+            <div className={`badge badge-success ${!moves ? '' : 'd-none'}`}>Player {this.state.userNamePlaying ? this.state.userNamePlaying : (this.state.playerIndex === 0 ? 'Computer' : 'You')} wins!</div>
           </div>
         </div>
 
