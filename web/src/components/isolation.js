@@ -14,9 +14,6 @@ class Isolation extends React.Component {
       userName: props.userName || '',
       userPlayed: props.userName || '',
       nameWillPlay: props.userName || '',
-      roomCode: this.props.roomCode || 0,
-      userName: props.userName || '',
-      userNamePlaying: props.userName || '',
       round: 1,
       playerIndex: 0,
       players: [
@@ -73,7 +70,7 @@ class Isolation extends React.Component {
     if(this.state.players[this.state.playerIndex].moves.length=== 0) {
       console.log('end');
     }else {
-      console.log('ultil');
+      console.log('until');
     }
   }
   componentDidMount() {
@@ -81,7 +78,6 @@ class Isolation extends React.Component {
       socket.on('sendDataClient', data => {
         this.grid.current.setValue(data.x, data.y, !data.playerIndex ? 'lightpink' : 'lightblue');
         this.setState({ x: data.x, y: data.y, playerIndex: !data.playerIndex ? 1 : 0, players: data.players, values: data.values, round: this.state.round + 1, nameWillPlay: data.nameWillPlay, userPlayed: data.userName });
-        this.setState({ x: data.x, y: data.y, playerIndex: !data.playerIndex ? 1 : 0, players: data.players, values: data.values, round: this.state.round + 1, userNamePlaying: data.userNamePlaying });
       });
     }
   }

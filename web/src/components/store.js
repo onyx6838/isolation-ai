@@ -1,7 +1,7 @@
 import { createStore } from 'redux'
 import io from "socket.io-client";
 const initialState = {
-    socket : io('https://isolation-app.herokuapp.com/')
+    socket : io('localhost:3000')
 }
 
 const changeState = (state = initialState, { type, ...rest }) => {
