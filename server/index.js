@@ -4,7 +4,6 @@ const http = require('http');
 const server = http.createServer(app);
 const {Server} = require('socket.io');
 const uuid = require('uuid');
-const _ = require('lodash');
 const io = new Server(server, {
     cors: {
         origin: "*",

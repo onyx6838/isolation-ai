@@ -132,7 +132,7 @@ class Isolation extends React.Component {
 
   render() {
     const moves = this.props.moves !== undefined ? this.props.moves : this.state.players[this.state.playerIndex].moves.length;
-    const winnerIndex = this.state.playerIndex ? 1 : 2;
+    //const winnerIndex = this.state.playerIndex ? 1 : 2;
 
     return (
       <div id='app' ref={this.container}>
