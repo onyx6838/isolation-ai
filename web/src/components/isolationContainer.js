@@ -26,7 +26,6 @@ class IsolationContainer extends React.Component {
         this.setState({ heuristic: HeuristicManager[e.currentTarget.value] });
         console.log(`Heuristic set to ${e.currentTarget.value}.`);
     }
-
     render() {
         return (
             <div className="wrapper">
@@ -81,6 +80,7 @@ class IsolationContainer extends React.Component {
                             <input type="radio" name="heuristic" value="defensiveToOffensive" checked={this.state.heuristic === HeuristicManager.defensiveToOffensive} onChange={this.onHeuristic} /> <span>Defensive to Offensive</span>
                         </div>
                     </div>
+                 
                 </div>}
             </div>
         );
