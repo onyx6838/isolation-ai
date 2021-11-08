@@ -9,28 +9,19 @@ class IsolationContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            index: this.props.index,
             roomCode: this.props.roomCode || 0,
             userName: props.userName || '',
             showHeuristic: props.strategy === StrategyManager.none ? false : true,
             strategy: props.strategy || StrategyManager.none,
             heuristic: props.heuristic || HeuristicManager.simple,
-            width: props.width || 4,
-            height: props.height || 4,
-            treeDepth: props.treeDepth || 15,
-            miniMaxDepth: props.miniMaxDepth || 5
+            width: props.width,
+            height: props.height,
+            treeDepth: props.treeDepth || 20,
+            miniMaxDepth: props.miniMaxDepth || 7
         };
         console.log(this.state.userName);
     }
-
-    // onStrategy = (e) => {
-    //     this.setState({ strategy: StrategyManager[e.currentTarget.value] });
-    //     console.log(`Strategy set to ${e.currentTarget.value}.`);
-    // }
-    // componentWillUpdate  () {
-    //     socket.on('initGame',()=>{
-    //         this.setState({ showIsolation: true });
-    //     })
-    // }
     onHeuristic = (e) => {
         this.setState({ heuristic: HeuristicManager[e.currentTarget.value] });
         console.log(`Heuristic set to ${e.currentTarget.value}.`);
@@ -40,6 +31,7 @@ class IsolationContainer extends React.Component {
         return (
             <div className="wrapper">
                 <Isolation width={this.state.width}
+                    index = {this.state.index}
                     roomCode={this.state.roomCode}
                     userName={this.state.userName}
                     height={this.state.height}
@@ -89,11 +81,6 @@ class IsolationContainer extends React.Component {
                             <input type="radio" name="heuristic" value="defensiveToOffensive" checked={this.state.heuristic === HeuristicManager.defensiveToOffensive} onChange={this.onHeuristic} /> <span>Defensive to Offensive</span>
                         </div>
                     </div>
-                    {/* <div className='row'>
-                        <div className='col'>
-                            <input type="radio" name="heuristic" value="walls" checked={this.state.heuristic === HeuristicManager.walls} onChange={this.onHeuristic} /> <span>Walls</span>
-                        </div>
-                    </div> */}
                 </div>}
             </div>
         );

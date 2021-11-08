@@ -9,31 +9,38 @@ const uuid = require('uuid');
 const io = new Server(server, {
     cors: {
         origin: "*",
+        methods: ["GET", "POST"]
     }
 });
 var rooms = [];
 app.get("/", (req, res) => {
     res.send("Game on!!!");
 });
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Our app is running on port ${PORT}`);
+});
 server.listen(3000, () => {
     console.log('listen 3000 port');
 })
 const joinRoom = (socket, userName, room) => {
-    if (room.sockets.length > 2) {
-        socket.emit('roomIsFull', 'false', userName);
-    } else {
+    if(room.sockets.length < 2) {
+        if(room.nameCreated !== userName)
+        room.nameJoin = userName;
         room.sockets.push(room && socket);
         console.log(`register ${room.id} with ${socket.id}`);
         socket.join(room.id, () => {
             socket.roomId = room.id;
         });
-        io.in(room.id).emit('roomIsFull', room.id, userName);
     }
+    io.in(room.id).emit('joinRoomClient', room.id, userName);
+
 
 }
 io.on('connection', (socket) => {
     socket.on('sendDataServer', data => {
         let room = rooms.find(x => x.name === data.roomCode);
+        data.nameWillPlay = room.nameJoin === data.userName? room.nameCreated: room.nameJoin;
         io.in(room.id).emit('sendDataClient', data);
     })
     console.log('a user connected ' + socket.id);
@@ -47,6 +54,8 @@ io.on('connection', (socket) => {
             } else {
                 const room = {
                     id: uuid.v4(),
+                    nameCreated: userName,
+                    nameJoin:'',
                     name: roomCode,
                     sockets: [],
                 };
@@ -61,21 +70,25 @@ io.on('connection', (socket) => {
             userName
         }) => {
             let room = {};
-            console.log(room);
             for (let room1 in rooms) {
                 if (rooms[room1].name === roomCode) {
                     room = rooms[room1];
                 }
             }
-            joinRoom(socket, userName, room);
+            if(room.id) {
+                joinRoom(socket, userName, room);
             if (room.sockets.length == 2) {
                 for (const client of room.sockets) {
                     console.log(room.name);
                     client.emit('initGame', room.name);
                 }
-            }
-
-
+          //  }
+        }
+           }
+            // if(room == {}) {
+            //     io.in(room.id).emit('joinRoomClient', '' , userName);
+            // }else {
+             
         });
 
     socket.on('disconnect', () => {
