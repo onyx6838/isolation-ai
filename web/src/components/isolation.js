@@ -11,7 +11,6 @@ class Isolation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-<<<<<<< HEAD
       index: this.props.index,//người tạo phòng index là 0, khách là 1; dùng để thay đổi lượt chơi
       roomCode: this.props.roomCode || 0,//mã phòng
       userName: props.userName || "",
