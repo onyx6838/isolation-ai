@@ -85,6 +85,14 @@ io.on('connection', (socket) => {
             }
         }),
 
+        socket.on('leave', roomCode=> {
+            var roomId = rooms.find(x=>x.name === roomCode).id;
+            console.log('removed: ' +roomCode);
+            // xóa phần tử biết giá trị trong mảng123
+            rooms.filter(x=>x.id === roomId);
+            io.in(roomId).emit('removedRoom', "Phòng đã bị xóa");
+        }),
+
     socket.on('disconnect', () => {
         console.log('user disconnected' + socket.id);
     })

@@ -7,8 +7,6 @@ import store from './store.js';
 const socket = store.getState().socket;
 global.jQuery = require('jquery');
 require('bootstrap');
-
-
 class Home extends Component {
     constructor(props) {
         super(props);
@@ -53,10 +51,16 @@ class Home extends Component {
                 document.querySelector('.div-getRoomCode').hidden = true;
             })
             this.setState({roomCode: roomCode});
+            if(this.state.strategy === StrategyManager.minimax) {
+                setTimeout(()=> {
+                    socket.emit('leave', this.state.roomCode);
+                   
+                }, 900000);
         }
     }
     joinRoom = (e) => {
         if(this.state.strategy === StrategyManager.minimax) {
+            console.log('join');
             this.setState({showHome:false});
         }
         else{
@@ -68,7 +72,7 @@ class Home extends Component {
             })
         }
     }
-   
+}
     componentDidUpdate  () {
         socket.on('initGame',(name)=>{
             this.setState({setdisabled:''});
@@ -83,8 +87,8 @@ class Home extends Component {
                 <div className="col-6">
                     <h3 className="text-uppercase">CHỌN CHẾ ĐỘ CHƠI</h3>
                         <div>
-                            <input type="radio" name="strategy" value="minimax" checked={this.state.strategy === StrategyManager.minimax} onChange={this.onStrategy} id="computer" /> <label htmlFor="computer" className="form-check-label mr-4">Computer</label>
-                            <input type="radio" name="strategy" value="none" checked={!this.state.strategy || this.state.strategy === StrategyManager.none} onChange={this.onStrategy} id="players" /> <label htmlFor = "players" className="form-check-label">2 Players</label>
+                            <input type="radio" name="strategy" value="minimax" checked={this.state.strategy === StrategyManager.minimax} onChange={this.onStrategy} id="computer" /> <label htmlFor="computer" className="form-check-label mr-4">Máy</label>
+                            <input type="radio" name="strategy" value="none" checked={!this.state.strategy || this.state.strategy === StrategyManager.none} onChange={this.onStrategy} id="players" /> <label htmlFor = "players" className="form-check-label">2 người chơi</label>
                         </div>
                         <div>
                             <label>Chọn bảng chơi: </label>
@@ -121,6 +125,4 @@ class Home extends Component {
     }
 }
 
-    
-
-export default Home
+export default Home;
