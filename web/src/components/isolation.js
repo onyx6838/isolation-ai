@@ -13,9 +13,9 @@ class Isolation extends React.Component {
     this.state = {
       index: this.props.index,//người tạo phòng index là 0, khách là 1; dùng để thay đổi lượt chơi
       roomCode: this.props.roomCode || 0,//mã phòng
-      userName: props.userName || "1",
-      userPlayed: props.userName || "1",//lưu tên người chơi trước
-      nameWillPlay: props.userName || "1",//tên người chơi tiếp theo
+      userName: props.userName || "",
+      userPlayed: props.userName || "",//lưu tên người chơi trước
+      nameWillPlay: props.userName || "",//tên người chơi tiếp theo
       round: 1,//lượt chơi của cả 2 người
       playerIndex: 0,//dành cho chơi vs máy, 0 là người, 1 là máy
       players: [//vị trí người chơi
