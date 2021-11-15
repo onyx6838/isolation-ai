@@ -4,6 +4,8 @@ import StrategyManager from "../managers/strategyManager";
 import Grid from "./grid";
 import Player from "./player";
 import store from "./store.js";
+
+import {createBrowserHistory} from 'history'
 const socket = store.getState().socket;
 class Isolation extends React.Component {
   constructor(props) {
@@ -11,9 +13,10 @@ class Isolation extends React.Component {
     this.state = {
       index: this.props.index,
       roomCode: this.props.roomCode || 0,
-      userName: props.userName || "",
-      userPlayed: props.userName || "",
-      nameWillPlay: props.userName || "",
+
+      userName: props.userName || '1',
+      userPlayed: props.userName || '1',
+      nameWillPlay: props.userName || '1',
       round: 1,
       playerIndex: 0,
       players: [
@@ -51,6 +54,7 @@ class Isolation extends React.Component {
     );
     this.grid = React.createRef();
     this.onGrid = this.onGrid.bind(this);
+
   }
   componentDidUpdate(nextProps) {
     const { strategy, heuristic, width, height, treeDepth, miniMaxDepth } =
@@ -84,8 +88,16 @@ class Isolation extends React.Component {
     } else {
       console.log("until");
     }
+
   }
+  
   componentDidMount() {
+    socket.on('removedRoom', message => {
+      alert(message);
+      var history = new createBrowserHistory();
+      history.replace('http://localhost:3001');
+      window.location.reload();
+    })
     if (StrategyManager.none === this.state.strategy) {
       socket.on("sendDataClient", (data) => {
         this.grid.current.setValue(

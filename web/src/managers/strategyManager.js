@@ -46,14 +46,16 @@ const StrategyManager = {
 
       console.log('Using AI strategy minimax.');
 
+
+      // trả về các node con hiện tại
       const getSuccessors = node => {
         return node ? node.children : [];
       };
-
+      // xác định nút có phải là nút lá hay không
       const isTerminal = node => {
         return node ? node.children.length === 0 : true;
       };
-
+      // trả về điểm cho nút hiện tại
       const getUtility = node => {
         return node ? node.score : -9999;
       };
