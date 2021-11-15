@@ -58,6 +58,7 @@ class Home extends Component {
                 }, 900000);
         }
     }
+}
     joinRoom = (e) => {
         if(this.state.strategy === StrategyManager.minimax) {
             console.log('join');
@@ -72,7 +73,7 @@ class Home extends Component {
             })
         }
     }
-}
+
     componentDidUpdate  () {
         socket.on('initGame',(name)=>{
             this.setState({setdisabled:''});
