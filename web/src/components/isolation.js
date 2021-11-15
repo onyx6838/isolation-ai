@@ -9,18 +9,18 @@ class Isolation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      index: this.props.index,
-      roomCode: this.props.roomCode || 0,
+      index: this.props.index,//người tạo phòng index là 0, khách là 1; dùng để thay đổi lượt chơi
+      roomCode: this.props.roomCode || 0,//mã phòng
       userName: props.userName || "",
-      userPlayed: props.userName || "",
-      nameWillPlay: props.userName || "",
-      round: 1,
-      playerIndex: 0,
-      players: [
+      userPlayed: props.userName || "",//lưu tên người chơi trước
+      nameWillPlay: props.userName || "",//tên người chơi tiếp theo
+      round: 1,//lượt chơi của cả 2 người
+      playerIndex: 0,//dành cho chơi vs máy, 0 là người, 1 là máy
+      players: [//vị trí người chơi
         {
           x: props.player1x || -1,
           y: props.player1y || -1,
-          moves: [{}],
+          moves: [{}],// các bước có thể di chuyển
         },
         {
           x: props.player2x || -1,
@@ -86,6 +86,7 @@ class Isolation extends React.Component {
     }
   }
   componentDidMount() {
+    //nhận data từ server gửi lên
     if (StrategyManager.none === this.state.strategy) {
       socket.on("sendDataClient", (data) => {
         this.grid.current.setValue(
@@ -107,8 +108,9 @@ class Isolation extends React.Component {
     }
   }
   onGrid = (x, y, values) => {
-    const playerIndex = this.state.playerIndex;
-    const players = this.state.players;
+    const playerIndex = this.state.playerIndex;//thứ tự 2 người chơi (người chơi thứ 0,1)
+    const players = this.state.players;//lấy vị trí của người chơi đang đứng\
+    //nếu bước đi hợp lệ
     if (
       IsolationManager.isValidMove(
         x,
@@ -123,8 +125,8 @@ class Isolation extends React.Component {
       players[playerIndex].x = x;
       players[playerIndex].y = y;
       // Update the grid local variable with the player move (so available moves will be accurate).
-      values[y][x] = playerIndex + 1;
-      // Update available moves for all players.
+      values[y][x] = playerIndex + 1;//màu ô
+      //cập nhật các bước có thể đi của người chơi
       players[0].moves = IsolationManager.availableMoves(
         0,
         players,
@@ -132,6 +134,7 @@ class Isolation extends React.Component {
         this.grid.current.props.width,
         this.grid.current.props.height
       );
+      //cập nhật các bước có thể đi của người chơi
       players[1].moves = IsolationManager.availableMoves(
         1,
         players,
@@ -139,8 +142,9 @@ class Isolation extends React.Component {
         this.grid.current.props.width,
         this.grid.current.props.height
       );
-      if (StrategyManager.none === this.state.strategy) {
-        if (this.state.index === this.state.playerIndex) {
+      //nếu 2 người chơi
+      if (StrategyManager.none === this.state.strategy){
+        if(this.state.index===this.state.playerIndex){
           socket.emit("sendDataServer", {
             x: x,
             y: y,
@@ -148,25 +152,18 @@ class Isolation extends React.Component {
             playerIndex: playerIndex,
             players: players,
             roomCode: this.state.roomCode,
-            userName: this.state.userName,
+            userNamePlaying: this.state.userName,
           });
-          return;
-        } else {
-          alert("Chưa đến lượt");
+        }
+        else{
+          alert("Chưa đến lượt, cút")
           return;
         }
       }
-      if (StrategyManager.none === this.state.strategy)
-        socket.emit("sendDataServer", {
-          x: x,
-          y: y,
-          values: values,
-          playerIndex: playerIndex,
-          players: players,
-          roomCode: this.state.roomCode,
-          userNamePlaying: this.state.userName,
-        });
+      
+        
       else {
+        //set màu vị trí được click
         this.grid.current.setValue(
           x,
           y,
@@ -180,22 +177,24 @@ class Isolation extends React.Component {
             players: players,
           },
           () => {
+            //nếu là máy và còn nước đi
             if (
               this.state.playerIndex &&
               this.state.players[this.state.playerIndex].moves.length > 0
             ) {
+              //nếu có chiến thuật
               if (
                 this.state.strategy &&
                 this.state.strategy !== StrategyManager.none
               ) {
-                
+                //nếu lượt chơi của máy vẫn chưa lớn hơn 2 thì random máy tiếp
                 if (
                   (this.state.width >= 4 ||
                   this.state.height >=4) &&
                   Math.round(this.state.round / 2) <= 2
                 ) {
                   setTimeout(() => {
-                    const tree = 1;
+                    const tree = 1;// có tree=1 là random
                     // Get the AI's move.
                     ({ x, y } = this.props.strategy(
                       tree,
@@ -206,22 +205,23 @@ class Isolation extends React.Component {
                       this.grid.current.props.height
                     ));
                     console.log(`AI is moving to ${x},${y}.`);
-
                     // Move the AI player.
                     this.onGrid(x, y, values);
                   }, 1000);
                   console.log(123);
                 } else {
+                  //nếu lượt chơi của máy chưa lớn hơn 5
                   if (
                     this.state.width >= 4 &&
                     this.state.height >= 4 &&
                     Math.round(this.state.round / 2) <= 5
                   ) {
-                    this.setState({ miniMaxDepth: 10, minDepth: 4 });
-                    console.log(">4");
+                    
+                    this.setState({ miniMaxDepth: 5});
+                    
                   } else {
-                    this.setState({ miniMaxDepth: 25, minDepth: 9 });
-                    console.log("random>5");
+                    this.setState({ miniMaxDepth: 15});
+                   
                   } // AI turn.
 
                   setTimeout(() => {
@@ -262,6 +262,7 @@ class Isolation extends React.Component {
     }
   };
   render() {
+    //các nước có thể di chuyển
     const moves =
       this.props.moves !== undefined
         ? this.props.moves

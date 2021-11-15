@@ -11,9 +11,9 @@ class Grid extends React.Component {
     const values = props.grid || [];  // fallback
     if (!props.grid) {
       // Populate the grid values with zeros.
-      for (let y = 0; y <= props.height; y++) {
+      for (let y = 0; y < props.height; y++) {
         const row = [];
-        for (let x = 0; x <= props.width; x++) {
+        for (let x = 0; x < props.width; x++) {
           row.push(0);
         }
         values.push(row);

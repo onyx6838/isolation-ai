@@ -1,4 +1,5 @@
 const IsolationManager = {
+  // kiểm tra bước đi có hợp lệ ko?
   isValidMove: (x, y, playerIndex, players, values, width, height) => {
     const activePlayer = players[playerIndex];
     //const opponentPlayer = players[!playerIndex ? 1 : 0];
@@ -110,14 +111,14 @@ const IsolationManager = {
 
     return isValid;
   },
-
+ // bước đi có thể đi
   availableMoves: (playerIndex, players, values, width, height) => {
     let moves = [];
     const activePlayer = players[playerIndex];
 
     if (activePlayer.x !== -1) {
       let x, y;
-
+      //kiểm tra các bước đi lên trên có hợp lệ không thì thêm
       // Up.
       for (y=activePlayer.y - 1; y>=0; y--) {
         if (IsolationManager.isValidMove(activePlayer.x, y, playerIndex, players, values, width, height)) {
@@ -236,7 +237,7 @@ const IsolationManager = {
 
     return moves;
   },
-
+  // tất cả các bước có thể đi, dùng cho lượt đi đầu tiên của mỗi người chơi
   allMoves: (playerIndex, players, width, height) => {
     const moves = [];
 
